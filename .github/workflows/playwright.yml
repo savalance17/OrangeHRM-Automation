@@ -26,6 +26,9 @@ jobs:
     - name: Run Playwright tests
       run: allurectl watch -- npx playwright test
       env:
+        ALLURE_ENDPOINT: ${{ secrets.ALLURE_TESTOPS_ENDPOINT }}
+        ALLURE_TOKEN: ${{ secrets.ALLURE_TESTOPS_TOKEN }}
+        ALLURE_PROJECT_ID: ${{ secrets.ALLURE_TESTOPS_PROJECT_ID }}
         ALLURE_RESULTS: allure-results
         ALLURE_LAUNCH_NAME: "Playwright CI #${{ github.run_number }}"
     - name: Generate Allure report (single file)
