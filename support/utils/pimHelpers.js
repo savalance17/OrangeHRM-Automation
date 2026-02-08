@@ -7,6 +7,7 @@ import { expect } from '@playwright/test';
  */
 export async function createEmployee(pim, employeeData) {
     await pim.pimEmployeeList.clickAdd();
+    await pim.pimAddEmployee.mainTitle.waitFor({ state: 'visible', timeout: 15_000 });
     await expect(pim.pimAddEmployee.mainTitle).toHaveText('Add Employee');
 
     await pim.pimAddEmployee.fillForm(employeeData);
