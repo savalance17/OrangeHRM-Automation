@@ -20,15 +20,15 @@ jobs:
       run: npx playwright install --with-deps
     - uses: allure-framework/setup-allurectl@v1
       with:
-        allure-endpoint: ${{ secrets.ALLURE_TESTOPS_ENDPOINT }}
-        allure-token: ${{ secrets.ALLURE_TESTOPS_TOKEN }}
-        allure-project-id: ${{ secrets.ALLURE_TESTOPS_PROJECT_ID }}
+        allure-endpoint: ${{ secrets.ALLURE_ENDPOINT }}
+        allure-token: ${{ secrets.ALLURE_TOKEN }}
+        allure-project-id: ${{ secrets.ALLURE_PROJECT_ID }}
     - name: Run Playwright tests
       run: allurectl watch -- npx playwright test
       env:
-        ALLURE_ENDPOINT: ${{ secrets.ALLURE_TESTOPS_ENDPOINT }}
-        ALLURE_TOKEN: ${{ secrets.ALLURE_TESTOPS_TOKEN }}
-        ALLURE_PROJECT_ID: ${{ secrets.ALLURE_TESTOPS_PROJECT_ID }}
+        ALLURE_ENDPOINT: ${{ secrets.ALLURE_ENDPOINT }}
+        ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
+        ALLURE_PROJECT_ID: ${{ secrets.ALLURE_PROJECT_ID }}
         ALLURE_RESULTS: allure-results
         ALLURE_LAUNCH_NAME: "Playwright CI #${{ github.run_number }}"
     - name: Generate Allure report (single file)
