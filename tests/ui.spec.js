@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import '../support/allure-screenshots.js';
 import { apiLogin } from '../support/orangehrm/utils/auth/authentication.js';
 import { users, createEmployeeDataFields } from '../support/orangehrm/fixtures/index.js';
 import PimFacade from '../support/orangehrm/pages/pim/PimFacade.js';

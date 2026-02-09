@@ -16,7 +16,8 @@
     "allure:clean": "node -e \"const fs=require('fs');fs.rmSync('allure-results',{recursive:true,force:true});fs.rmSync('allure-report',{recursive:true,force:true});\"",
     "allure:clean:results": "node -e \"const fs=require('fs');fs.rmSync('allure-results',{recursive:true,force:true});\"",
     "allure:clean:report": "node -e \"const fs=require('fs');fs.rmSync('allure-report',{recursive:true,force:true});\"",
-    "test:allure": "npm run test && npm run allure:generate && npm run allure:open"
+    "test:allure": "npm run test && npm run allure:generate && npm run allure:open",
+    "test:allure:fresh": "npm run allure:clean:results && npm run test && npm run allure:generate && npm run allure:open"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "@playwright/test": "^1.58.1",
     "@types/node": "^25.1.0",
     "allure": "^3.0.0",
+    "allure-js-commons": "^3.0.0",
     "allure-playwright": "^3.0.0",
     "allure-commandline": "^2.36.0"
   }

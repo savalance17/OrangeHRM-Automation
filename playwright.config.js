@@ -32,6 +32,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Screenshot: done in support/allure-screenshots.js (one per test in Allure); no Playwright auto-screenshot to avoid duplicates */
   },
 
   /* Configure projects for major browsers */
