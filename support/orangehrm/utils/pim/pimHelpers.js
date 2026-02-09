@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 
 /**
  * Подготовка тестовых данных: создаёт сотрудника по переданным данным.
- * @param {import('../pageObjects/Pages/PIM/PimFacade.js').default} pim
+ * @param {import('../../pages/pim/PimFacade.js').default} pim
  * @param {Object} employeeData - { firstName, middleName, lastName, employeeId } (из createEmployeeDataFields())
  */
 export async function createEmployee(pim, employeeData) {

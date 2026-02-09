@@ -1,17 +1,17 @@
 import { test, expect } from '@playwright/test';
-import { apiLogin } from '../support/utils/Authentication.js';
-import { openPim } from '../support/utils/openPim.js';
-import { users, createEmployeeDataFields } from '../support/fixtures/index.js';
-import PimFacade from '../support/pageObjects/Pages/PIM/PimFacade.js';
+import { apiLogin } from '../support/orangehrm/utils/auth/authentication.js';
+import { openPim } from '../support/orangehrm/utils/pim/openPim.js';
+import { users, createEmployeeDataFields } from '../support/orangehrm/fixtures/index.js';
+import PimFacade from '../support/orangehrm/pages/pim/PimFacade.js';
 import {
     createEmployee,
     goToEmployeeListAndSearchById,
     openEmployeeCardForEdit,
     deleteEmployee,
     expectEmployeeFoundInList
-} from '../support/utils/pimHelpers.js';
+} from '../support/orangehrm/utils/pim/pimHelpers.js';
 
-test.describe('Работа с PIM', { tag: ['@smoke']}, () => {
+test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
     test.beforeEach(async ({ page }) => {
         await apiLogin(page, users.adminUserLogin, users.adminUserPassword);
@@ -19,8 +19,8 @@ test.describe('Работа с PIM', { tag: ['@smoke']}, () => {
     });
 
     test('Добавление сотрудника в "Employee List"', async function ({ page }) {
-        const employeeData = createEmployeeDataFields();
         const pim = new PimFacade(page);
+        const employeeData = createEmployeeDataFields();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -38,8 +38,8 @@ test.describe('Работа с PIM', { tag: ['@smoke']}, () => {
     })
 
     test('Поиск добавленного сотрудника в Employee List по Employee Id', async function ({ page }) {
-        const employeeData = createEmployeeDataFields();
         const pim = new PimFacade(page);
+        const employeeData = createEmployeeDataFields();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -55,8 +55,8 @@ test.describe('Работа с PIM', { tag: ['@smoke']}, () => {
     })
 
     test('Поиск добавленного сотрудника в Employee List по Employee Name', async function ({ page }) {
-        const employeeData = createEmployeeDataFields();
         const pim = new PimFacade(page);
+        const employeeData = createEmployeeDataFields();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -116,8 +116,8 @@ test.describe('Работа с PIM', { tag: ['@smoke']}, () => {
     })
 
     test('Удаление сотрудника', async function ({ page }) {
-        const employeeData = createEmployeeDataFields();
         const pim = new PimFacade(page);
+        const employeeData = createEmployeeDataFields();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);

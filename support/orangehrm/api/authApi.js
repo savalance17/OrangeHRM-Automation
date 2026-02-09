@@ -1,7 +1,7 @@
 /**
  * Отправка POST на auth/validate из контекста страницы (fetch).
  * Куки сессии сохраняются в браузере.
- * @returns {Promise<boolean>} true, если ответ успешный (2xx после редиректов)
+ * @returns {Promise<boolean>} true, если ответ успешный
  */
 export async function submitLoginViaFetch(page, { validateUrl, token, username, password }) {
     return page.evaluate(

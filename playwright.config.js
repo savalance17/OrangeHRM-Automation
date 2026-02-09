@@ -5,8 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './e2e',
-  /* Timeout per test (PIM flows need time for loaders and navigation). */
+  testDir: './tests',
+  /* Timeout per test */
   timeout: 90_000,
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -39,7 +39,14 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: [/api\.spec\.js/],
     },
-
+    {
+      name: 'api-challenges',
+      testMatch: /api\.spec\.js/,
+      use: {
+        baseURL: 'https://apichallenges.herokuapp.com',
+      },
+    },
   ],
 });

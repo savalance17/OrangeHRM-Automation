@@ -2,9 +2,6 @@
  * Страница добавления сотрудника (Add Employee).
  */
 export default class PimAddEmployee {
-    /**
-     * @param {import('@playwright/test').Page} page
-     */
     constructor(page) {
         this.page = page;
         this.mainTitle = page.locator('.orangehrm-main-title');
@@ -18,7 +15,7 @@ export default class PimAddEmployee {
 
     /**
      * Ждёт исчезновения лоадера формы. Если не исчезнет за timeout — тест падает.
-     * @param {number} [timeout=90_000] - таймаут ожидания (мс), должен быть меньше таймаута теста
+     * @param {number} [timeout=90_000] - таймаут ожидания (мс)
      */
     async waitForLoaderHidden(timeout = 90_000) {
         await this.formLoader.waitFor({ state: 'hidden', timeout });

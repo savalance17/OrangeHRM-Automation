@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
-import SidebarMenu from '../pageObjects/Pages/SidebarMenu.js';
-import TopbarHeader from '../pageObjects/Pages/TopbarHeader.js';
+import SidebarMenu from '../../pages/common/SidebarMenu.js';
+import TopbarHeader from '../../pages/common/TopbarHeader.js';
 
 /**
  * Открывает раздел PIM и проверяет, что открылся модуль PIM и вкладка Employee List.
@@ -10,7 +10,7 @@ import TopbarHeader from '../pageObjects/Pages/TopbarHeader.js';
 export async function openPim(page) {
     const sidebarMenu = new SidebarMenu(page);
     const topbarHeader = new TopbarHeader(page);
-    await sidebarMenu.openPim();
+    await page.goto('/web/index.php/pim/viewPimModule');
 
     const checks = [
         { name: 'PIM пункт меню активен', fn: () => expect(sidebarMenu.pimMenuItem).toHaveClass(/active/, { timeout: 15_000 }) },

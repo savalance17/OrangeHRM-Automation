@@ -10,7 +10,7 @@ export default class SidebarMenu {
         this.pimMenuItem = page.locator('a.oxd-main-menu-item[href="/web/index.php/pim/viewPimModule"]');
     }
 
-    /** Открывает модуль PIM через пункт левого меню (переход на Employee List). */
+    /** Кликает по PIM в пункте бокового меню */
     async openPim() {
         this.pimMenuItem.click();
     }
