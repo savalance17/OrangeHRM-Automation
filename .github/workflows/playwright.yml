@@ -38,18 +38,8 @@ jobs:
         ALLURE_LAUNCH_NAME: "Playwright CI #${{ github.run_number }}"
     - name: Generate Allure report (single file)
       if: always()
-      run: npx allure awesome ./allure-results --single-file --output allure-report
-    - name: Verify report and list
-      if: always()
-      run: |
-        REPORT_FILE="allure-report/awesome/index.html"
-        if [ ! -f "$REPORT_FILE" ]; then
-          echo "::error::Report not found at $REPORT_FILE"
-          ls -la allure-report/ 2>/dev/null || true
-          exit 1
-        fi
-        ls -la "$REPORT_FILE"
-        echo "Report size: $(wc -c < "$REPORT_FILE") bytes"
+      continue-on-error: true
+      run: npx allure awesome ./allure-results --single-file
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
       if: always()
@@ -57,7 +47,7 @@ jobs:
       with:
         name: allure single file
         path: |
-          allure-report/awesome/index.html
+          allure-report/index.html
           allure-results
           playwright-report
         retention-days: 90
@@ -67,12 +57,11 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        REPORT_FILE="allure-report/awesome/index.html"
-        if [ -f "$REPORT_FILE" ]; then
+        if [ -f allure-report/index.html ]; then
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
             -F chat_id="${TELEGRAM_CHAT_ID}" \
-            -F document=@$REPORT_FILE \
-            -F caption="Allure report (single-file) · Run #${{ github.run_number }}"
+            -F document=@allure-report/index.html \
+            -F caption="Allure report (single-file)"
         fi
     - name: Deploy Allure report to GitHub Pages
       if: always() && ((github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) || github.event_name == 'workflow_dispatch')
@@ -80,7 +69,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: allure-report/awesome
+        publish_dir: allure-report
         destination_dir: .
     - name: Notify Telegram
       if: always()
