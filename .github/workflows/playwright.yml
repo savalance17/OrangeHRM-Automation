@@ -9,6 +9,9 @@ jobs:
   test:
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
     - uses: actions/checkout@v5
     - uses: actions/setup-node@v5
@@ -59,7 +62,7 @@ jobs:
             -F caption="Allure report (single-file)"
         fi
     - name: Deploy Allure report to GitHub Pages
-      if: always()
+      if: always() && (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
       continue-on-error: true
       uses: peaceiris/actions-gh-pages@v4
       with:
