@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { apiLogin } from '../support/orangehrm/utils/auth/authentication.js';
-import { openPim } from '../support/orangehrm/utils/pim/openPim.js';
 import { users, createEmployeeDataFields } from '../support/orangehrm/fixtures/index.js';
 import PimFacade from '../support/orangehrm/pages/pim/PimFacade.js';
 import {
+    openPim,
     createEmployee,
     goToEmployeeListAndSearchById,
     openEmployeeCardForEdit,

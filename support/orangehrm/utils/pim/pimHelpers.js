@@ -1,4 +1,31 @@
 import { expect } from '@playwright/test';
+import SidebarMenu from '../../pages/common/SidebarMenu.js';
+import TopbarHeader from '../../pages/common/TopbarHeader.js';
+
+/**
+ * Открывает раздел PIM и проверяет, что открылся модуль PIM и вкладка Employee List.
+ * @param {import('@playwright/test').Page} page
+ */
+export async function openPim(page) {
+    const sidebarMenu = new SidebarMenu(page);
+    const topbarHeader = new TopbarHeader(page);
+    await page.goto('/web/index.php/pim/viewPimModule');
+
+    const checks = [
+        { name: 'PIM пункт меню активен', fn: () => expect(sidebarMenu.pimMenuItem).toHaveClass(/active/, { timeout: 15_000 }) },
+        { name: 'Breadcrumb содержит PIM', fn: () => expect(topbarHeader.breadcrumbModule).toHaveText('PIM') },
+        { name: 'Вкладка Employee List посещена', fn: () => expect(topbarHeader.employeeListTab).toHaveClass(/--visited/, { timeout: 15_000 }) },
+    ];
+
+    for (const { name, fn } of checks) {
+        try {
+            await fn();
+        } catch (err) {
+            console.error(`[openPimAndVerify] Не прошла проверка: "${name}".`, err.message);
+            throw err;
+        }
+    }
+}
 
 /**
  * Подготовка тестовых данных: создаёт сотрудника по переданным данным.
@@ -13,7 +40,7 @@ export async function createEmployee(pim, employeeData) {
     await pim.pimAddEmployee.fillForm(employeeData);
     await pim.pimAddEmployee.clickSave();
 
-    await pim.personalDetails.waitForPageReady();
+    await pim.personalDetails.waitUntilReady();
 }
 
 /**
@@ -41,14 +68,12 @@ export async function expectEmployeeFoundInList(pim, employeeData) {
 
 /**
  * Открывает карточку сотрудника для редактирования (клик Edit по строке с employeeId)
- * и ждёт готовности страницы Personal Details: заголовок, исчезновение лоадера, появление полей формы.
+ * и ждёт готовности страницы Personal Details.
  * @param {string} employeeId
  */
 export async function openEmployeeCardForEdit(pim, employeeId) {
     await pim.pimEmployeeList.clickEditButton(employeeId);
-    await pim.personalDetails.waitForPageReady();
-    await pim.personalDetails.waitForLoaderHidden();
-    await pim.personalDetails.waitForFormLoaded();
+    await pim.personalDetails.waitUntilReady();
 }
 
 /**
