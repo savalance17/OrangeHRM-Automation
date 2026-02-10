@@ -8,13 +8,21 @@
 - [Запуск в GitHub Actions](#-запуск-в-github-actions)
 - [Пример Allure-отчёта](#-пример-allure-отчёта)
 - [Пример Allure TestOps-отчёта](#-пример-allure-testops-отчёта)
+- [Технологии](#-технологии)
 - [Уведомления в Telegram](#-уведомления-в-telegram-с-использованием-бота)
+- [Подробная инструкция по запуску](#-подробная-инструкция-по-запуску)
 
-Тесты написаны на **JavaScript** с использованием фреймворка **Playwright**.
+## Описание
 
-Для удалённого запуска настроен **GitHub Actions**: прогон тестов, формирование Allure-отчёта, публикация на GitHub Pages, отправка результатов в **Allure TestOps** и уведомления в **Telegram** при помощи бота.
+Репозиторий содержит набор UI и API тестов, написанных на JavaScript с использованием фреймворка автоматизации Playwright. Настроен GitHub Actions как CI-система: реализован запуск автотестов, генерация Allure-отчётов, интеграция с TestOps и отправка уведомлений в Telegram.
 
 Тестируемое приложение: [OrangeHRM](https://www.orangehrm.com/) (демо-стенд opensource-demo.orangehrmlive.com). В проекте также есть API-тесты для [API Challenges](https://apichallenges.herokuapp.com/).
+
+## Технологии
+
+<img src="docs/images/jsIcon.gif" alt="JavaScript" width="40" height="40"> <img src="docs/images/playwright-original.svg" alt="Playwright" width="40" height="40"> <img src="docs/images/gitIco.svg" alt="GitHub" width="40" height="40"> <img src="docs/images/allureicon.png" alt="Allure Report" width="40" height="40"> <img src="docs/images/allure2icon.png" alt="TestOps" width="40" height="40"> <img src="docs/images/telegramIcon.gif" alt="Telegram" width="40" height="40">
+
+**Стек:** JavaScript · Playwright · GitHub Actions · Allure Report · Allure TestOps · Telegram
 
 ---
 
@@ -47,6 +55,8 @@
 ---
 
 ## ▶️ Запуск автотестов
+
+Подробная пошаговая инструкция по установке окружения и запуску тестов — в [RUN_GUIDE.md](RUN_GUIDE.md).
 
 ### Запуск тестов из терминала
 
@@ -113,6 +123,8 @@ npm run allure:open
 
 В CI отчёт собирается в single-file и публикуется на **GitHub Pages**. Локально — через `npm run allure:serve` или `npm run allure:open`.
 
+![Пример Allure-отчёта](docs/images/allure-report.jpg)
+
 ---
 
 ## Allure TestOps
@@ -120,6 +132,8 @@ npm run allure:open
 ### Пример Allure TestOps-отчёта
 
 Результаты передаются в **Allure TestOps** через allurectl (при настроенных секретах `ALLURE_ENDPOINT`, `ALLURE_TOKEN`, `ALLURE_PROJECT_ID` в GitHub Actions).
+
+![Пример Allure TestOps](docs/images/allure-testops.jpg)
 
 ---
 
@@ -133,3 +147,11 @@ npm run allure:open
 2. **Сообщение** — сводка: статус прогона, количество пройденных/упавших/пропущенных тестов, ссылки на Allure-отчёт и на run в GitHub Actions.
 
 Сводка формируется скриптом `scripts/telegram-summary.js`. В репозитории должны быть заданы секреты: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+
+![Уведомление в Telegram](docs/images/telegram-notification.jpg)
+
+---
+
+## Подробная инструкция по запуску
+
+Подробная инструкция по установке зависимостей, настройке окружения и запуску тестов локально и в CI — в файле **[RUN_GUIDE.md](RUN_GUIDE.md)**.
