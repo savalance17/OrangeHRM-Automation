@@ -11,7 +11,7 @@ export default class SidebarMenu {
     }
 
     /** Кликает по PIM в пункте бокового меню */
-    async openPim() {
-        this.pimMenuItem.click();
+    async clickPim() {
+        await this.pimMenuItem.click();
     }
 }

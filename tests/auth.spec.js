@@ -11,15 +11,15 @@ test.describe('Авторизация', { tag: ['@smoke', '@auth'] }, () => {
 
     test('Успешный вход по логину и паролю', async ({ page }) => {
         const dashboardPage = new DashboardPage(page);
-        const dashboardText = 'Dashboard';
+        const expectedHeading = 'Dashboard';
 
         await test.step('Войти в систему по логину и паролю', async () => {
             await manualLogin(page, users.adminUserLogin, users.adminUserPassword);
         });
 
-        await test.step('Проверить, что отображается дашборд', async () => {
+        await test.step('Проверить, что отображается главная страница (Dashboard)', async () => {
             const headingText = await dashboardPage.getHeadingText();
-            expect(headingText).toBe(dashboardText);
+            expect(headingText).toBe(expectedHeading);
         });
     });
 

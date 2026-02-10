@@ -1,9 +1,9 @@
 /**
- * Страница Dashboard
+ * Страница Dashboard после входа.
  */
 export default class DashboardPage {
     constructor(page) {
-        this.heading = page.locator('h6:has-text("Dashboard")');
+        this.heading = page.locator('h6.oxd-topbar-header-breadcrumb-module');
     }
 
     /**
@@ -14,7 +14,7 @@ export default class DashboardPage {
     }
 
     /**
-     * Возвращает текст заголовка страницы (Dashboard).
+     * Возвращает текст заголовка страницы в топбаре (Dashboard).
      * @returns {Promise<string>}
      */
     async getHeadingText() {

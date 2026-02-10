@@ -16,7 +16,7 @@ export default class AuthorizationPage {
      * @param {string} login
      */
     async fillLoginInput(login) {
-        await this.usernameInput.waitFor({ state: 'visible', timeout: 10000 });
+        await this.usernameInput.waitFor({ state: 'visible' });
         await this.usernameInput.fill(login);
     }
 

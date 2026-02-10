@@ -15,6 +15,7 @@ export default class PimEmployeeList {
         this.searchButton = this.filterArea.locator('button[type="submit"]');
         this.tableRows = this.employeeList.locator('.oxd-table-body .oxd-table-card');
         this.tableLoader = this.employeeList.locator('.oxd-table-loader');
+        this.recordsCountIndicator = page.getByText(/Record(s)? Found|No Records Found/i).first();
         this.rowActionButtonsSelector = '.oxd-table-cell-actions button';
     }
 
@@ -24,11 +25,13 @@ export default class PimEmployeeList {
     }
 
     /**
-     * Ждёт окончания загрузки таблицы (исчезновение спиннера).
+     * Ждёт готовности таблицы: исчезновение спиннера и появление индикатора результатов
+     * («X Record(s) Found» / «No Records Found»). Вызывать после Search или после обновления списка.
      * @param {number} [timeout=15000] - таймаут
      */
-    async waitForTableLoaded(timeout = 15_000) {
+    async waitForTableReady(timeout = 15_000) {
         await this.tableLoader.waitFor({ state: 'hidden', timeout });
+        await this.recordsCountIndicator.waitFor({ state: 'visible', timeout });
     }
 
     /**
@@ -53,7 +56,7 @@ export default class PimEmployeeList {
 
         await test.step('Нажатие Search и ожидание загрузки таблицы', async () => {
             await this.searchButton.click();
-            await this.waitForTableLoaded();
+            await this.waitForTableReady();
         });
     }
 
@@ -62,6 +65,14 @@ export default class PimEmployeeList {
      */
     getAllTableRows() {
         return this.tableRows;
+    }
+
+    /**
+     * Возвращает количество строк в таблице сотрудников.
+     * @returns {Promise<number>}
+     */
+    async getTableRowCount() {
+        return this.tableRows.count();
     }
 
     /**

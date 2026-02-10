@@ -9,7 +9,6 @@ import {
     goToEmployeeListAndSearchById,
     openEmployeeCardForEdit,
     deleteEmployee,
-    expectEmployeeFoundInList
 } from '../support/orangehrm/utils/pim/pimHelpers.js';
 
 test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
@@ -36,7 +35,7 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
                 employeeId: employeeData.employeeId,
             });
         });
-    })
+    });
 
     test('Поиск добавленного сотрудника в Employee List по Employee Id', async function ({ page }) {
         const pim = new PimFacade(page);
@@ -51,9 +50,13 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
         });
 
         await test.step('Проверка, что сотрудник найден в списке', async () => {
-            await expectEmployeeFoundInList(pim, employeeData);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(1);
+            const row = pim.pimEmployeeList.getRowByEmployeeId(employeeData.employeeId);
+            await expect(row).toContainText(employeeData.firstName);
+            await expect(row).toContainText(employeeData.lastName);
         });
-    })
+    });
 
     test('Поиск добавленного сотрудника в Employee List по Employee Name', async function ({ page }) {
         const pim = new PimFacade(page);
@@ -71,11 +74,12 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
         });
 
         await test.step('Проверка, что сотрудник найден в списке', async () => {
-            await expect(pim.pimEmployeeList.getAllTableRows()).toHaveCount(1);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(1);
             const rowsByName = pim.pimEmployeeList.getRowsByEmployeeName(employeeData.firstName, employeeData.lastName);
             await expect(rowsByName).toContainText(employeeData.employeeId);
         });
-    })
+    });
 
     test('Редактирование сотрудника', async function ({ page }) {
         const pim = new PimFacade(page);
@@ -88,6 +92,8 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Переход в список, поиск сотрудника и открытие карточки', async () => {
             await goToEmployeeListAndSearchById(pim, employeeData.employeeId);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(1);
             await openEmployeeCardForEdit(pim, employeeData.employeeId);
         });
 
@@ -107,6 +113,8 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Переход в список и поиск сотрудника', async () => {
             await goToEmployeeListAndSearchById(pim, employeeData.employeeId);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(1);
         });
 
         await test.step('Проверка отображения изменений в таблице', async () => {
@@ -114,7 +122,7 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
             await expect(updatedRow).toContainText(updatedData.firstName);
             await expect(updatedRow).toContainText(updatedData.lastName);
         });
-    })
+    });
 
     test('Удаление сотрудника', async function ({ page }) {
         const pim = new PimFacade(page);
@@ -126,12 +134,15 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Переход в Employee List, поиск сотрудника и удаление', async () => {
             await goToEmployeeListAndSearchById(pim, employeeData.employeeId);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(1);
             await deleteEmployee(pim, employeeData.employeeId);
         });
 
         await test.step('Ищем сотрудника в списке и проверяем, что ничего не найдено', async () => {
             await pim.pimEmployeeList.searchByFilters({ employeeId: employeeData.employeeId });
-            await expect(pim.pimEmployeeList.getAllTableRows()).toHaveCount(0);
+            const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            expect(rowCount).toBe(0);
         });
     });
 });

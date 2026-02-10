@@ -2,26 +2,19 @@ import { test } from '@playwright/test';
 import AuthorizationPage from '../../pages/common/AuthorizationPage.js';
 import DashboardPage from '../../pages/common/DashboardPage.js';
 import { submitLoginViaFetch } from '../../api/authApi.js';
-import {
-    AUTH_VALIDATE_PATH,
-    AUTH_TIMEOUT_MS,
-    AUTH_VERIFY_TIMEOUT_MS,
-} from '../../config/constants.js';
 
 /**
- * Проверяет, что пользователь успешно авторизован: URL дашборда и видимый заголовок "Dashboard".
- * @param {{ timeout?: number }} options
- * @throws если за timeout не выполнились условия
+ * Проверяет, что пользователь успешно авторизован: URL дашборда и видимый заголовок Dashboard.
+ * Используется дефолтный таймаут Playwright.
  */
-export async function expectLoggedIn(page, options = {}) {
+export async function expectLoggedIn(page) {
     const dashboardPage = new DashboardPage(page);
 
-    const timeout = options.timeout ?? AUTH_VERIFY_TIMEOUT_MS;
     await test.step('Проверка URL dashboard', async () => {
-        await page.waitForURL(/\/dashboard\//, { timeout });
+        await page.waitForURL(/\/dashboard\/?/);
     });
     await test.step('Проверка заголовка Dashboard', async () => {
-        await dashboardPage.waitForHeadingVisible(timeout);
+        await dashboardPage.waitForHeadingVisible();
     });
 }
 
@@ -32,15 +25,8 @@ export async function expectLoggedIn(page, options = {}) {
 export async function manualLogin(page, login, password) {
     const authorizationPage = new AuthorizationPage(page);
 
-    await test.step('Открыть страницу логина', async () => {
-        await page.goto('/');
-    });
-    await test.step('Заполнить логин и пароль', async () => {
-        await authorizationPage.fillLoginInput(login);
-        await authorizationPage.fillPasswordInput(password);
-    });
-    await test.step('Нажать Login', async () => {
-        await authorizationPage.clickLoginButton();
+    await test.step('Выполнить авторизацию (логин и пароль)', async () => {
+        await authorizationPage.openAndSubmitLogin(login, password);
     });
     await test.step('Проверить, что логин успешен', async () => {
         await expectLoggedIn(page);
@@ -52,6 +38,7 @@ export async function manualLogin(page, login, password) {
  */
 export async function apiLogin(page, login, password) {
     const authPage = new AuthorizationPage(page);
+    const authValidatePath = '/web/index.php/auth/validate';
     let token;
     let baseURL;
     let validateUrl;
@@ -61,7 +48,7 @@ export async function apiLogin(page, login, password) {
         await page.goto('/');
     });
     await test.step('Получить CSRF token', async () => {
-        await authPage.tokenInput.waitFor({ state: 'attached', timeout: AUTH_TIMEOUT_MS });
+        await authPage.tokenInput.waitFor({ state: 'attached' });
         token = await authPage.tokenInput.inputValue();
         if (!token) {
             throw new Error('CSRF token (_token) not found on login page');
@@ -69,7 +56,7 @@ export async function apiLogin(page, login, password) {
     });
     await test.step('Подготовить URL для auth/validate', async () => {
         baseURL = new URL(page.url()).origin;
-        validateUrl = baseURL + AUTH_VALIDATE_PATH;
+        validateUrl = baseURL + authValidatePath;
     });
     await test.step('Отправить запрос авторизации', async () => {
         ok = await submitLoginViaFetch(page, {
@@ -79,9 +66,14 @@ export async function apiLogin(page, login, password) {
             password,
         });
     });
-    await test.step('Проверить успешность авторизации', async () => {
-        if (!ok) {
-            throw new Error('Login failed: auth/validate returned non-OK status');
-        }
+    if (!ok) {
+        throw new Error('Login failed: auth/validate returned non-OK status');
+    }
+
+    await test.step('Перейти в приложение (сессия уже установлена)', async () => {
+        await page.goto('/');
+    });
+    await test.step('Проверить успешность входа (URL + заголовок Dashboard)', async () => {
+        await expectLoggedIn(page);
     });
 }
