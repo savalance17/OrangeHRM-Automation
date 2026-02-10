@@ -1,8 +1,8 @@
 /**
- * Reads allure-results/*-result.json, counts passed/failed/skipped,
- * and sends a formatted summary to Telegram.
- * Usage: REPORT_LINK=... RUN_LINK=... node scripts/telegram-summary.js
- * Env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, REPORT_LINK, RUN_LINK (optional)
+ * Читает allure-results/*-result.json, считает пройденные/упавшие/пропущенные тесты
+ * и отправляет сводку в Telegram.
+ * Запуск: REPORT_LINK=... RUN_LINK=... node scripts/telegram-summary.js
+ * Переменные: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, REPORT_LINK, RUN_LINK (необязательно)
  */
 const fs = require('fs');
 const path = require('path');
