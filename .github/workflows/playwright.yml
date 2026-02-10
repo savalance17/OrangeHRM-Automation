@@ -63,6 +63,15 @@ jobs:
             -F document=@allure-report/index.html \
             -F caption="Allure report (single-file)"
         fi
+    - name: Send test summary to Telegram
+      if: always()
+      continue-on-error: true
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        REPORT_LINK: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        RUN_LINK: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: node scripts/telegram-summary.js
     - name: Deploy Allure report to GitHub Pages
       if: always() && ((github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')) || github.event_name == 'workflow_dispatch')
       continue-on-error: true
