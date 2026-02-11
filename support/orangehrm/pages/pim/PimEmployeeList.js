@@ -27,8 +27,8 @@ export default class PimEmployeeList {
      * Ждёт готовности таблицы: исчезновение спиннера и появление индикатора результатов
      * @param {number} [timeout=15000] - таймаут
      */
-    async waitForTableReady(timeout = 35_000) {
-        await this.tableLoader.waitFor({ state: 'hidden', timeout });
+    async waitForTableReady() {
+        await this.tableLoader.waitFor({ state: 'hidden' });
         // TODO: OrangeHRM после скрытия лоадера сначала перерисовывает всю таблицу, затем через
         // несколько секунд подставляет результаты поиска. Поэтому используется фиксированная задержка
         await this.page.waitForTimeout(3000);
@@ -57,6 +57,7 @@ export default class PimEmployeeList {
         await test.step('Нажатие Search и ожидание загрузки таблицы', async () => {
             await this.searchButton.click();
             await this.waitForTableReady();
+            await this.page.waitForLoadState('networkidle');
         });
     }
 

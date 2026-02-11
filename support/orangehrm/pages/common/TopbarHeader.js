@@ -11,6 +11,7 @@ class TopbarHeader {
     /** Переход на вкладку Employee List */
     async openEmployeeListTab() {
         await this.employeeListTab.click();
+        await this.page.waitForLoadState('networkidle');
     }
 }
 export default TopbarHeader
