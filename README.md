@@ -2,15 +2,16 @@
 
 ## Содержание
 
-- [Тест-кейсы](#-тест-кейсы)
-- [Запуск автотестов](#-запуск-автотестов)
-- [Генерация отчётов](#-генерация-отчётов)
-- [Запуск в GitHub Actions](#-запуск-в-github-actions)
-- [Пример Allure-отчёта](#-пример-allure-отчёта)
-- [Пример Allure TestOps-отчёта](#-пример-allure-testops-отчёта)
-- [Технологии](#-технологии)
-- [Уведомления в Telegram](#-уведомления-в-telegram-с-использованием-бота)
-- [Подробная инструкция по запуску](#-подробная-инструкция-по-запуску)
+- [Описание](#описание)
+- [Технологии](#технологии)
+- [Тест-кейсы](#тест-кейсы)
+- [Запуск автотестов](#запуск-автотестов)
+- [Генерация отчётов](#генерация-отчётов)
+- [Запуск в GitHub Actions](#запуск-в-github-actions)
+- [Пример Allure-отчёта](#пример-allure-отчёта)
+- [Пример Allure TestOps-отчёта](#пример-allure-testops-отчёта)
+- [Уведомления в Telegram](#уведомления-в-telegram)
+- [Подробная инструкция по запуску](#подробная-инструкция-по-запуску)
 
 ## Описание
 
@@ -24,9 +25,7 @@
 
 **Стек:** JavaScript · Playwright · GitHub Actions · Allure Report · Allure TestOps · Telegram
 
----
-
-## 🕵️‍♂️ Тест-кейсы
+## Тест-кейсы
 
 ### UI (OrangeHRM)
 
@@ -52,9 +51,7 @@
 - ✔️ GET /challenger/guid (существующий X-CHALLENGER)
 - ✔️ PUT /challenger/guid CREATE
 
----
-
-## ▶️ Запуск автотестов
+## Запуск автотестов
 
 Подробная пошаговая инструкция по установке окружения и запуску тестов — в [RUN_GUIDE.md](RUN_GUIDE.md).
 
@@ -84,9 +81,7 @@ npx playwright test --project=api-challenges
 npm run test:smoke
 ```
 
----
-
-## 📊 Генерация отчётов
+## Генерация отчётов
 
 ### Allure из терминала
 
@@ -105,41 +100,25 @@ npm run allure:generate
 npm run allure:open
 ```
 
----
-
-## GitHub Actions
-
-### Запуск в GitHub Actions
+## Запуск в GitHub Actions
 
 Тесты запускаются автоматически при **push** и **pull request** в ветки `main` / `master`, а также вручную через **workflow_dispatch** (вкладка Actions → Playwright Tests → Run workflow).
 
 После прогона Allure-отчёт публикуется на **GitHub Pages**, результаты при необходимости отправляются в Allure TestOps, в Telegram уходит файл отчёта и текстовая сводка.
 
----
-
-## Allure Report
-
-### Пример Allure-отчёта
+## Пример Allure-отчёта
 
 В CI отчёт собирается в single-file и публикуется на **GitHub Pages**. Локально — через `npm run allure:serve` или `npm run allure:open`.
 
 ![Пример Allure-отчёта](docs/images/allure-report.jpg)
 
----
-
-## Allure TestOps
-
-### Пример Allure TestOps-отчёта
+## Пример Allure TestOps-отчёта
 
 Результаты передаются в **Allure TestOps** через allurectl (при настроенных секретах `ALLURE_ENDPOINT`, `ALLURE_TOKEN`, `ALLURE_PROJECT_ID` в GitHub Actions).
 
 ![Пример Allure TestOps](docs/images/allure-testops.jpg)
 
----
-
-## Telegram
-
-### Уведомления в Telegram с использованием бота
+## Уведомления в Telegram
 
 После завершения прогона в CI бот отправляет в чат:
 
@@ -149,8 +128,6 @@ npm run allure:open
 Сводка формируется скриптом `scripts/telegram-summary.js`. В репозитории должны быть заданы секреты: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 
 ![Уведомление в Telegram](docs/images/telegram-notification.jpg)
-
----
 
 ## Подробная инструкция по запуску
 

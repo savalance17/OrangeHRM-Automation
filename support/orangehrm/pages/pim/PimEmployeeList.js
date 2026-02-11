@@ -15,7 +15,6 @@ export default class PimEmployeeList {
         this.searchButton = this.filterArea.locator('button[type="submit"]');
         this.tableRows = this.employeeList.locator('.oxd-table-body .oxd-table-card');
         this.tableLoader = this.employeeList.locator('.oxd-table-loader');
-        this.recordsCountIndicator = page.getByText(/Record(s)? Found|No Records Found/i).first();
         this.rowActionButtonsSelector = '.oxd-table-cell-actions button';
     }
 
@@ -26,12 +25,13 @@ export default class PimEmployeeList {
 
     /**
      * Ждёт готовности таблицы: исчезновение спиннера и появление индикатора результатов
-     * («X Record(s) Found» / «No Records Found»). Вызывать после Search или после обновления списка.
      * @param {number} [timeout=15000] - таймаут
      */
-    async waitForTableReady(timeout = 15_000) {
+    async waitForTableReady(timeout = 35_000) {
         await this.tableLoader.waitFor({ state: 'hidden', timeout });
-        await this.recordsCountIndicator.waitFor({ state: 'visible', timeout });
+        // TODO: OrangeHRM после скрытия лоадера сначала перерисовывает всю таблицу, затем через
+        // несколько секунд подставляет результаты поиска. Поэтому используется фиксированная задержка
+        await this.page.waitForTimeout(3000);
     }
 
     /**
@@ -89,6 +89,15 @@ export default class PimEmployeeList {
      */
     getRowByEmployeeId(employeeId) {
         return this.getRowsByEmployeeId(employeeId).first();
+    }
+
+    /**
+     * Ждёт появления в таблице строки с указанным Employee Id.
+     * @param {string} employeeId - Employee Id
+     * @param {number} [timeout=15000] - таймаут
+     */
+    async waitForRowWithEmployeeIdVisible(employeeId, timeout = 15_000) {
+        await this.getRowByEmployeeId(employeeId).waitFor({ state: 'visible', timeout });
     }
 
     /**

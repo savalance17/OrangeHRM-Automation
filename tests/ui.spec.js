@@ -51,7 +51,9 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Проверка, что сотрудник найден в списке', async () => {
             const rowCount = await pim.pimEmployeeList.getTableRowCount();
+            // Проверяем что найден только один сотрудник
             expect(rowCount).toBe(1);
+            
             const row = pim.pimEmployeeList.getRowByEmployeeId(employeeData.employeeId);
             await expect(row).toContainText(employeeData.firstName);
             await expect(row).toContainText(employeeData.lastName);
@@ -119,8 +121,7 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Проверка отображения изменений в таблице', async () => {
             const updatedRow = pim.pimEmployeeList.getRowByEmployeeId(employeeData.employeeId);
-            await expect(updatedRow).toContainText(updatedData.firstName);
-            await expect(updatedRow).toContainText(updatedData.lastName);
+            await expect(updatedRow).toContainText([updatedData.firstName, updatedData.lastName]);
         });
     });
 
@@ -134,6 +135,7 @@ test.describe('PIM', { tag: ['@smoke','@pim' ]}, () => {
 
         await test.step('Переход в Employee List, поиск сотрудника и удаление', async () => {
             await goToEmployeeListAndSearchById(pim, employeeData.employeeId);
+            await pim.pimEmployeeList.waitForRowWithEmployeeIdVisible(employeeData.employeeId);
             const rowCount = await pim.pimEmployeeList.getTableRowCount();
             expect(rowCount).toBe(1);
             await deleteEmployee(pim, employeeData.employeeId);
