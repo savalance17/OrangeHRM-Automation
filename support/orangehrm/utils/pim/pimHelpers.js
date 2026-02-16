@@ -31,7 +31,7 @@ export async function createEmployee(pim, employeeData) {
  * Переход на вкладку Employee List и поиск сотрудника по Employee Id.
  * Ждёт загрузки таблицы, затем выполняет поиск. Проверку количества записей выполняет тест.
  * @param {import('../../pages/pim/PimFacade.js').default} pim
- * @param {string} employeeId
+ * @param {string} employeeId - ID сотрудника
  */
 export async function goToEmployeeListAndSearchById(pim, employeeId) {
     await pim.topbarHeader.openEmployeeListTab();

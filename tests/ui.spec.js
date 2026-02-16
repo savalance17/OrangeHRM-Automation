@@ -1,4 +1,5 @@
 import { test, expect, users, createEmployeeDataFields } from '../support/orangehrm/fixtures/index.js';
+import '../support/allure-screenshots.js';
 import { apiLogin } from '../support/orangehrm/utils/auth/authentication.js';
 import {
     openPim,
