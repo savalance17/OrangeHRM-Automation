@@ -1,5 +1,6 @@
 import { test as testWithAuth, expect } from './authFixture.js';
 import PimFacade from '../pages/pim/PimFacade.js';
+import { registerAllureScreenshotHook } from '../../allure-screenshots.js';
 
 /** @typedef {import('../pages/common/index.js').AuthFacade} AuthFacade */
 
@@ -10,5 +11,7 @@ export const test = testWithAuth.extend({
         await use(pim);
     },
 });
+
+registerAllureScreenshotHook(test);
 
 export { expect };
