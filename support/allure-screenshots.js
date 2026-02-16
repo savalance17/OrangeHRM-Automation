@@ -1,8 +1,10 @@
 /**
- * Регистрирует afterEach: прикрепляет скриншот к отчёту (Playwright + Allure) для каждого UI-теста.
+ * Регистрирует afterEach: прикрепляет скриншот к Allure для каждого UI-теста.
  * Нужно вызывать с тем же объектом test, который используют спеки (расширенный test).
- * Используется testInfo.attach(), чтобы allure-playwright подхватил вложение.
+ * Используется allure.attachment(), как и ранее.
  */
+import * as allure from 'allure-js-commons';
+import { ContentType } from 'allure-js-commons';
 /**
  * @param {import('@playwright/test').TestType} testObj — объект test (расширенный), на котором регистрировать хук
  */
@@ -11,9 +13,8 @@ export function registerAllureScreenshotHook(testObj) {
     if (!page || testInfo.project.name === 'api-challenges') return;
     try {
       const screenshot = await page.screenshot();
-      await testInfo.attach('Screenshot', { body: screenshot, contentType: 'image/png' });
+      await allure.attachment('Screenshot', screenshot, ContentType.PNG);
     } catch {
-      // Page may be closed; don't fail the test for a missing screenshot
     }
   });
 }
