@@ -1,5 +1,4 @@
-import SidebarMenu from '../../pages/common/SidebarMenu.js';
-import TopbarHeader from '../../pages/common/TopbarHeader.js';
+import { SidebarMenu, TopbarHeader } from '../../pages/common/index.js';
 
 /**
  * Открывает раздел PIM (клик по пункту меню) и ждёт, пока отобразится страница PIM.

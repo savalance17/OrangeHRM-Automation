@@ -1,5 +1,3 @@
-import { test } from '@playwright/test';
-
 /**
  * Страница Personal Details (редактирование сотрудника)
  */
@@ -36,15 +34,10 @@ export default class PimPersonalDetails {
      * @param {string} [data.lastName] - фамилия
      */
     async updatePersonalDetails(data) {
-        await test.step('Ожидание формы Personal Details', async () => {
-            await this.waitUntilReady();
-        });
-
-        await test.step('Заполнение полей Personal Details', async () => {
-            if (data.firstName != null) await this.firstNameInput.fill(data.firstName);
-            if (data.middleName != null) await this.middleNameInput.fill(data.middleName);
-            if (data.lastName != null) await this.lastNameInput.fill(data.lastName);
-        });
+        await this.waitUntilReady();
+        if (data.firstName != null) await this.firstNameInput.fill(data.firstName);
+        if (data.middleName != null) await this.middleNameInput.fill(data.middleName);
+        if (data.lastName != null) await this.lastNameInput.fill(data.lastName);
     }
 
     /**

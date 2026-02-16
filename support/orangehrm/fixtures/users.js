@@ -1,6 +1,6 @@
 export const users = {
-    adminUserLogin: 'Admin',
-    adminUserPassword: 'admin123',
+    adminUserLogin: process.env.ORANGEHRM_ADMIN_LOGIN || 'Admin',
+    adminUserPassword: process.env.ORANGEHRM_ADMIN_PASSWORD || 'admin123',
 }
 
 export const testUsers = [

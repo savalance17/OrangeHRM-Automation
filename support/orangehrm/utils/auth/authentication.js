@@ -1,6 +1,4 @@
-import { test } from '@playwright/test';
-import AuthorizationPage from '../../pages/common/AuthorizationPage.js';
-import DashboardPage from '../../pages/common/DashboardPage.js';
+import { AuthorizationPage, DashboardPage } from '../../pages/common/index.js';
 import { submitLoginViaFetch } from '../../api/authApi.js';
 
 /**
@@ -9,13 +7,8 @@ import { submitLoginViaFetch } from '../../api/authApi.js';
  */
 export async function expectLoggedIn(page) {
     const dashboardPage = new DashboardPage(page);
-
-    await test.step('Проверка URL dashboard', async () => {
-        await page.waitForURL(/\/dashboard\/?/);
-    });
-    await test.step('Проверка заголовка Dashboard', async () => {
-        await dashboardPage.waitForHeadingVisible();
-    });
+    await page.waitForURL(/\/dashboard\/?/);
+    await dashboardPage.waitForHeadingVisible();
 }
 
 /**
@@ -24,13 +17,8 @@ export async function expectLoggedIn(page) {
  */
 export async function manualLogin(page, login, password) {
     const authorizationPage = new AuthorizationPage(page);
-
-    await test.step('Выполнить авторизацию (логин и пароль)', async () => {
-        await authorizationPage.openAndSubmitLogin(login, password);
-    });
-    await test.step('Проверить, что логин успешен', async () => {
-        await expectLoggedIn(page);
-    });
+    await authorizationPage.openAndSubmitLogin(login, password);
+    await expectLoggedIn(page);
 }
 
 /**
@@ -44,36 +32,23 @@ export async function apiLogin(page, login, password) {
     let validateUrl;
     let ok;
 
-    await test.step('Открыть страницу логина', async () => {
-        await page.goto('/');
-    });
-    await test.step('Получить CSRF token', async () => {
-        await authPage.tokenInput.waitFor({ state: 'attached' });
-        token = await authPage.tokenInput.inputValue();
-        if (!token) {
-            throw new Error('CSRF token (_token) not found on login page');
-        }
-    });
-    await test.step('Подготовить URL для auth/validate', async () => {
-        baseURL = new URL(page.url()).origin;
-        validateUrl = baseURL + authValidatePath;
-    });
-    await test.step('Отправить запрос авторизации', async () => {
-        ok = await submitLoginViaFetch(page, {
-            validateUrl,
-            token,
-            username: login,
-            password,
-        });
+    await page.goto('/');
+    await authPage.tokenInput.waitFor({ state: 'attached' });
+    token = await authPage.tokenInput.inputValue();
+    if (!token) {
+        throw new Error('CSRF token (_token) not found on login page');
+    }
+    baseURL = new URL(page.url()).origin;
+    validateUrl = baseURL + authValidatePath;
+    ok = await submitLoginViaFetch(page, {
+        validateUrl,
+        token,
+        username: login,
+        password,
     });
     if (!ok) {
         throw new Error('Login failed: auth/validate returned non-OK status');
     }
-
-    await test.step('Перейти в приложение (сессия уже установлена)', async () => {
-        await page.goto('/');
-    });
-    await test.step('Проверить успешность входа (URL + заголовок Dashboard)', async () => {
-        await expectLoggedIn(page);
-    });
+    await page.goto('/');
+    await expectLoggedIn(page);
 }

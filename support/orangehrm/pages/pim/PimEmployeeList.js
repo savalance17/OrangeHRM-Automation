@@ -1,5 +1,3 @@
-import { test } from '@playwright/test';
-
 /**
  * Страница списка сотрудников PIM (Employee List).
  * Форма Employee Information: Employee Name, Employee Id.
@@ -14,6 +12,7 @@ export default class PimEmployeeList {
         this.employeeIdSearchInput = this.filterArea.locator('.oxd-input-group').filter({ hasText: 'Employee Id' }).locator('input.oxd-input');
         this.searchButton = this.filterArea.locator('button[type="submit"]');
         this.tableRows = this.employeeList.locator('.oxd-table-body .oxd-table-card');
+        this.tableBody = this.employeeList.locator('.oxd-table-body');
         this.tableLoader = this.employeeList.locator('.oxd-table-loader');
         this.rowActionButtonsSelector = '.oxd-table-cell-actions button';
     }
@@ -24,14 +23,47 @@ export default class PimEmployeeList {
     }
 
     /**
-     * Ждёт готовности таблицы: исчезновение спиннера и появление индикатора результатов
-     * @param {number} [timeout=15000] - таймаут
+     * Ждёт готовности таблицы: исчезновение спиннера и стабилизацию DOM.
+     * Считаем таблицу готовой, когда её содержимое не меняется заданное время.
+     * @param {number} [timeout=15000] - общий таймаут
+     * @param {number} [stableForMs=500] - сколько ms контент должен быть неизменным
      */
-    async waitForTableReady() {
-        await this.tableLoader.waitFor({ state: 'hidden' });
-        // TODO: OrangeHRM после скрытия лоадера сначала перерисовывает всю таблицу, затем через
-        // несколько секунд подставляет результаты поиска. Поэтому используется фиксированная задержка
-        await this.page.waitForTimeout(3000);
+    async waitForTableReady(timeout = 15_000, stableForMs = 500) {
+        await this.tableLoader.waitFor({ state: 'hidden', timeout });
+        await this.waitForTableStability({ timeout, stableForMs });
+    }
+
+    /**
+     * Ждёт, пока текст таблицы не изменяется stableForMs.
+     * @param {Object} options
+     * @param {number} options.timeout
+     * @param {number} options.stableForMs
+     * @param {number} [options.pollIntervalMs=100]
+     */
+    async waitForTableStability({ timeout, stableForMs, pollIntervalMs = 100 }) {
+        const deadline = Date.now() + timeout;
+        let lastText = null;
+        let stableSince = null;
+
+        while (Date.now() < deadline) {
+            const currentText = (await this.tableBody.textContent()) ?? '';
+
+            if (currentText === lastText) {
+                if (stableSince == null) {
+                    stableSince = Date.now();
+                }
+                if (Date.now() - stableSince >= stableForMs) {
+                    return;
+                }
+            } else {
+                lastText = currentText;
+                stableSince = Date.now();
+            }
+
+            await this.page.waitForTimeout(pollIntervalMs);
+        }
+
+        throw new Error('Таблица не стабилизировалась за отведённое время.');
     }
 
     /**
@@ -41,24 +73,15 @@ export default class PimEmployeeList {
      * @param {string} [filters.employeeId] - Employee Id
      */
     async searchByFilters(filters) {
-        await test.step('Ожидание блока фильтров Employee Information', async () => {
-            await this.filterArea.waitFor({ state: 'visible' });
-        });
-
-        await test.step('Заполнение полей фильтра', async () => {
-            if (filters.employeeName != null) {
-                await this.employeeNameSearchInput.fill(filters.employeeName);
-            }
-            if (filters.employeeId != null) {
-                await this.employeeIdSearchInput.fill(filters.employeeId);
-            }
-        });
-
-        await test.step('Нажатие Search и ожидание загрузки таблицы', async () => {
-            await this.searchButton.click();
-            await this.waitForTableReady();
-            await this.page.waitForLoadState('networkidle');
-        });
+        await this.filterArea.waitFor({ state: 'visible' });
+        if (filters.employeeName != null) {
+            await this.employeeNameSearchInput.fill(filters.employeeName);
+        }
+        if (filters.employeeId != null) {
+            await this.employeeIdSearchInput.fill(filters.employeeId);
+        }
+        await this.searchButton.click();
+        await this.waitForTableReady();
     }
 
     /**
