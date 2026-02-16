@@ -1,9 +1,5 @@
-import { test, expect } from '../support/orangehrm/fixtures/authFixture.js';
-import '../support/allure-screenshots.js';
+import { test, expect, users, authMessages } from '../support/orangehrm/fixtures/index.js';
 import { manualLogin } from '../support/orangehrm/utils/auth/authentication.js';
-import { users } from '../support/orangehrm/fixtures/index.js';
-
-const invalidCredentialsMessage = 'Invalid credentials';
 
 test.describe('Авторизация', { tag: ['@smoke', '@auth'] }, () => {
 
@@ -29,7 +25,7 @@ test.describe('Авторизация', { tag: ['@smoke', '@auth'] }, () => {
 
         await test.step('Остаёмся на странице логина, отображается сообщение об ошибке', async () => {
             const errorText = await auth.authorizationPage.getErrorAlertText();
-            expect(errorText).toContain(invalidCredentialsMessage);
+            expect(errorText).toContain(authMessages.invalidCredentials);
             await expect(page).toHaveURL(/auth\/login/);
         });
     });
@@ -43,7 +39,7 @@ test.describe('Авторизация', { tag: ['@smoke', '@auth'] }, () => {
 
         await test.step('Остаёмся на странице логина, отображается сообщение об ошибке', async () => {
             const errorText = await auth.authorizationPage.getErrorAlertText();
-            expect(errorText).toContain(invalidCredentialsMessage);
+            expect(errorText).toContain(authMessages.invalidCredentials);
             await expect(page).toHaveURL(/auth\/login/);
         });
     });

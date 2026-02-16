@@ -1,8 +1,6 @@
-import TopbarHeader from '../common/TopbarHeader.js';
-import PimEmployeeList from './PimEmployeeList.js';
-import PimAddEmployee from './PimAddEmployee.js';
-import PimPersonalDetails from './PimPersonalDetails.js';
-import ConfirmDeleteModal from '../modal-windows/ConfirmDeleteModal.js';
+import { TopbarHeader } from '../common/index.js';
+import { PimEmployeeList, PimAddEmployee, PimPersonalDetails } from './index.js';
+import { ConfirmDeleteModal } from '../modal-windows/index.js';
 
 export default class PimFacade {
     constructor(page) {

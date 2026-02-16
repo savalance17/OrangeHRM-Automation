@@ -71,5 +71,5 @@ npx playwright show-report
 ```bash
 npm run test:smoke
 npm run test:critical
-npm run test:tag -- @API
+npm run test:tag -- @api
 ```

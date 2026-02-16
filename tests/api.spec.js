@@ -21,7 +21,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('15 - POST /todos (400) extra', { tag: ['@API', '@POST'] }, async ({ request }) => {
+  test('15 - POST /todos (400) extra', { tag: ['@api', '@post'] }, async ({ request }) => {
     const todosService = new TodosService(request);
     let response;
 
@@ -38,7 +38,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('17 - POST /todos/{id} (200)', { tag: ['@API', '@POST'] }, async ({ request }) => {
+  test('17 - POST /todos/{id} (200)', { tag: ['@api', '@post'] }, async ({ request }) => {
     const todosService = new TodosService(request);
     let id;
     let createRes;
@@ -77,7 +77,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('25 - GET /todos (200) XML', { tag: ['@API', '@GET'] }, async ({ request }) => {
+  test('25 - GET /todos (200) XML', { tag: ['@api', '@get'] }, async ({ request }) => {
     const todosService = new TodosService(request);
     let response;
     let text;
@@ -96,7 +96,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@API', '@GET'] }, async ({ request }) => {
+  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@api', '@get'] }, async ({ request }) => {
     const challengerService = new ChallengerService(request);
     let response;
     let body;
@@ -116,7 +116,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('36 - PUT /challenger/guid CREATE', { tag: ['@API', '@PUT'] }, async ({ request }) => {
+  test('36 - PUT /challenger/guid CREATE', { tag: ['@api', '@put'] }, async ({ request }) => {
     const challengerService = new ChallengerService(request);
     const newToken = faker.string.uuid();
     let response1;
