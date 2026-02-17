@@ -1,137 +1,90 @@
 import { test, expect } from '../support/apichallenges/fixtures/apiFixture.js';
 import { faker } from '@faker-js/faker';
 
+/** @typedef {import('../support/apichallenges/api/ApiFacade.js').default} ApiFacade */
+
 test.describe('API Challenges', () => {
   let token;
 
-  test.beforeEach(async ({ api }) => {
-    let response;
+  test.beforeEach(async (/** @type {{ api: ApiFacade }} */ { api }) => {
+    const response = await api.challenger.post();
 
-    await test.step('Создание сессии challenger', async () => {
-      response = await api.challenger.post();
-    });
-
-    await test.step('Проверка ответа и сохранение токена', async () => {
-      expect(response.status()).toBe(201);
-      const headers = await response.headers();
-      token = headers['x-challenger'];
-      expect(token).toBeTruthy();
-    });
+    expect(response.status()).toBe(201);
+    const headers = await response.headers();
+    token = headers['x-challenger'];
+    expect(token).toBeTruthy();
   });
 
-  test('15 - POST /todos (400) extra', { tag: ['@api', '@post'] }, async ({ api }) => {
-    let response;
-
-    await test.step('Отправить POST /todos с лишним полем priority', async () => {
-      response = await api.todos.postTodo(token, {
-        title: 'a title',
-        description: 'optional',
-        priority: 'extra',
-      });
+  test('15 - POST /todos (400) extra', { tag: ['@api', '@post'] }, async (/** @type {{ api: ApiFacade }} */ { api }) => {
+    const response = await api.todos.postTodo(token, {
+      title: 'a title',
+      description: 'optional',
+      priority: 'extra',
     });
 
-    await test.step('Проверить статус ответа 400', async () => {
-      expect(response.status()).toBe(400);
-    });
+    expect(response.status()).toBe(400);
   });
 
-  test('17 - POST /todos/{id} (200)', { tag: ['@api', '@post'] }, async ({ api }) => {
+  test('17 - POST /todos/{id} (200)', { tag: ['@api', '@post'] }, async (/** @type {{ api: ApiFacade }} */ { api }) => {
     let id;
     let createRes;
     let created;
     let updateRes;
     let updated;
 
-    await test.step('Создать todo', async () => {
-      createRes = await api.todos.postTodo(token, {
-        title: 'Todo to update',
-        description: 'Original description',
-        doneStatus: false,
-      });
+    createRes = await api.todos.postTodo(token, {
+      title: 'Todo to update',
+      description: 'Original description',
+      doneStatus: false,
     });
 
-    await test.step('Проверить создание todo', async () => {
-      expect(createRes.status()).toBe(201);
-      created = await createRes.json();
+    expect(createRes.status()).toBe(201);
+    created = await createRes.json();
+
+    id = created.id ?? created.todos?.[0]?.id;
+    expect(id).toBeDefined();
+
+    updateRes = await api.todos.postTodoById(token, id, {
+      title: 'Updated title',
     });
 
-    await test.step('Извлечь id todo', async () => {
-      id = created.id ?? created.todos?.[0]?.id;
-      expect(id).toBeDefined();
-    });
-
-    await test.step('Обновить todo по id', async () => {
-      updateRes = await api.todos.postTodoById(token, id, {
-        title: 'Updated title',
-      });
-    });
-
-    await test.step('Проверить обновление todo', async () => {
-      expect(updateRes.status()).toBe(200);
-      updated = await updateRes.json();
-      expect(updated.title ?? updated.todos?.[0]?.title).toBe('Updated title');
-    });
+    expect(updateRes.status()).toBe(200);
+    updated = await updateRes.json();
+    expect(updated.title ?? updated.todos?.[0]?.title).toBe('Updated title');
   });
 
-  test('25 - GET /todos (200) XML', { tag: ['@api', '@get'] }, async ({ api }) => {
-    let response;
-    let text;
+  test('25 - GET /todos (200) XML', { tag: ['@api', '@get'] }, async (/** @type {{ api: ApiFacade }} */ { api }) => {
+    const response = await api.todos.getTodos(token, { accept: 'application/xml' });
 
-    await test.step('Запросить todos в XML формате', async () => {
-      response = await api.todos.getTodos(token, { accept: 'application/xml' });
-    });
+    expect(response.status()).toBe(200);
 
-    await test.step('Проверить статус ответа 200', async () => {
-      expect(response.status()).toBe(200);
-    });
-
-    await test.step('Проверить XML в ответе', async () => {
-      text = await response.text();
-      expect(text).toMatch(/<\?xml|<\/?todos?/i);
-    });
+    const text = await response.text();
+    expect(text).toMatch(/<\?xml|<\/?todos?/i);
   });
 
-  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@api', '@get'] }, async ({ api }) => {
-    let response;
-    let body;
+  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@api', '@get'] }, async (/** @type {{ api: ApiFacade }} */ { api }) => {
+    const response = await api.challenger.getChallengerGuid(token);
 
-    await test.step('Запросить данные challenger по guid', async () => {
-      response = await api.challenger.getChallengerGuid(token);
-    });
+    expect(response.status()).toBe(200);
 
-    await test.step('Проверить статус ответа 200', async () => {
-      expect(response.status()).toBe(200);
-    });
-
-    await test.step('Проверить payload challenger', async () => {
-      body = await response.json();
-      expect(body.xChallenger).toBe(token);
-      expect(body).toHaveProperty('challengeStatus');
-    });
+    const body = await response.json();
+    expect(body.xChallenger).toBe(token);
+    expect(body).toHaveProperty('challengeStatus');
   });
 
-  test('36 - PUT /challenger/guid CREATE', { tag: ['@api', '@put'] }, async ({ api }) => {
+  test('36 - PUT /challenger/guid CREATE', { tag: ['@api', '@put'] }, async (/** @type {{ api: ApiFacade }} */ { api }) => {
     const newToken = faker.string.uuid();
-    let response1;
     let body;
     let response2;
 
-    await test.step('Получить текущий payload challenger', async () => {
-      response1 = await api.challenger.getChallengerGuid(token);
-      body = await response1.json();
-    });
+    const response1 = await api.challenger.getChallengerGuid(token);
+    body = await response1.json();
 
-    await test.step('Заменить xChallenger на новый guid', async () => {
-      body.xChallenger = newToken;
-    });
+    body.xChallenger = newToken;
 
-    await test.step('Отправить PUT /challenger/{guid}', async () => {
-      response2 = await api.challenger.putChallengerGuid(body, newToken);
-    });
+    response2 = await api.challenger.putChallengerGuid(body, newToken);
 
-    await test.step('Проверить создание challenger (201)', async () => {
-      expect(response2.status()).toBe(201);
-      expect(body.xChallenger).toBe(newToken);
-    });
+    expect(response2.status()).toBe(201);
+    expect(body.xChallenger).toBe(newToken);
   });
 });
