@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test';
-import PimFacade from '../pages/pim/PimFacade.js';
+import { PimFacade } from '../pages/pim/index.js';
 
 /** @type {import('@playwright/test').TestType<{ pim: PimFacade }>} */
 export const test = base.extend({

@@ -1,5 +1,5 @@
 import { test as testWithAuth, expect } from './authFixture.js';
-import PimFacade from '../pages/pim/PimFacade.js';
+import { PimFacade } from '../pages/pim/index.js';
 
 /** @typedef {import('../pages/common/index.js').AuthFacade} AuthFacade */
 
