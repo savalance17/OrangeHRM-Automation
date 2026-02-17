@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Страница Personal Details (редактирование сотрудника)
  */
@@ -21,9 +23,15 @@ export default class PimPersonalDetails {
      * @param {number} [timeout=40000] - таймаут на каждый шаг (мс)
      */
     async waitUntilReady(timeout = 60_000) {
-        await this.formLoader.waitFor({ state: 'hidden', timeout });
-        await this.mainTitle.waitFor({ state: 'visible', timeout });
-        await this.firstNameInput.waitFor({ state: 'visible', timeout });
+        await test.step('Ожидание скрытия лоадера Personal Details', async () => {
+            await this.formLoader.waitFor({ state: 'hidden', timeout });
+        });
+        await test.step('Ожидание заголовка Personal Details', async () => {
+            await this.mainTitle.waitFor({ state: 'visible', timeout });
+        });
+        await test.step('Ожидание поля First Name', async () => {
+            await this.firstNameInput.waitFor({ state: 'visible', timeout });
+        });
     }
 
     /**
@@ -35,9 +43,21 @@ export default class PimPersonalDetails {
      */
     async updatePersonalDetails(data) {
         await this.waitUntilReady();
-        if (data.firstName != null) await this.firstNameInput.fill(data.firstName);
-        if (data.middleName != null) await this.middleNameInput.fill(data.middleName);
-        if (data.lastName != null) await this.lastNameInput.fill(data.lastName);
+        if (data.firstName != null) {
+            await test.step('Обновление имени сотрудника', async () => {
+                await this.firstNameInput.fill(data.firstName);
+            });
+        }
+        if (data.middleName != null) {
+            await test.step('Обновление отчества сотрудника', async () => {
+                await this.middleNameInput.fill(data.middleName);
+            });
+        }
+        if (data.lastName != null) {
+            await test.step('Обновление фамилии сотрудника', async () => {
+                await this.lastNameInput.fill(data.lastName);
+            });
+        }
     }
 
     /**
@@ -45,7 +65,9 @@ export default class PimPersonalDetails {
      */
     async clickSave() {
         await this.waitUntilReady();
-        await this.saveButton.click();
+        await test.step('Клик по Save в Personal Details', async () => {
+            await this.saveButton.click();
+        });
     }
 
     /**
@@ -54,13 +76,20 @@ export default class PimPersonalDetails {
      */
     async getPersonalDetailsValues() {
         await this.waitUntilReady();
-        const employeeNameHeading = (await this.employeeNameHeading.textContent()) ?? '';
+        const employeeNameHeading = await test.step('Получение имени сотрудника в заголовке', async () => {
+            return (await this.employeeNameHeading.textContent()) ?? '';
+        });
+        const fields = await test.step('Получение значений полей Personal Details', async () => {
+            return {
+                firstName: await this.firstNameInput.inputValue(),
+                middleName: await this.middleNameInput.inputValue(),
+                lastName: await this.lastNameInput.inputValue(),
+                employeeId: await this.employeeIdInput.inputValue(),
+            };
+        });
         return {
             employeeNameHeading,
-            firstName: await this.firstNameInput.inputValue(),
-            middleName: await this.middleNameInput.inputValue(),
-            lastName: await this.lastNameInput.inputValue(),
-            employeeId: await this.employeeIdInput.inputValue(),
+            ...fields,
         };
     }
 }

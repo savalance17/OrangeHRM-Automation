@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Модальное окно подтверждения "Are you Sure?".
  */
@@ -18,18 +20,22 @@ export default class ConfirmDeleteModal {
      * Подтверждает — нажимает "Yes, Delete".
      */
     async confirm() {
-        await this.waitForVisible(true);
-        await this.confirmButton.click();
-        await this.waitForVisible(false);
+        await test.step('Подтверждение удаления в модалке', async () => {
+            await this.waitForVisible(true);
+            await this.confirmButton.click();
+            await this.waitForVisible(false);
+        });
     }
 
     /**
      * Отменяет — нажимает "No, Cancel".
      */
     async cancel() {
-        await this.waitForVisible(true);
-        await this.cancelButton.click();
-        await this.waitForVisible(false);
+        await test.step('Отмена удаления в модалке', async () => {
+            await this.waitForVisible(true);
+            await this.cancelButton.click();
+            await this.waitForVisible(false);
+        });
     }
 
     /**

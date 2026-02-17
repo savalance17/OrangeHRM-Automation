@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Боковое меню приложения (Admin, PIM, Leave, Time и др.).
  */
@@ -12,6 +14,8 @@ export default class SidebarMenu {
 
     /** Кликает по PIM в пункте бокового меню */
     async clickPim() {
-        await this.pimMenuItem.click();
+        await test.step('Переход в PIM из бокового меню', async () => {
+            await this.pimMenuItem.click();
+        });
     }
 }

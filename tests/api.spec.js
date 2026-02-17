@@ -1,16 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/apichallenges/fixtures/apiFixture.js';
 import { faker } from '@faker-js/faker';
-import { ChallengerService, TodosService } from '../support/apichallenges/api/index.js';
 
 test.describe('API Challenges', () => {
   let token;
 
-  test.beforeAll(async ({ request }) => {
-    const challengerService = new ChallengerService(request);
+  test.beforeEach(async ({ api }) => {
     let response;
 
     await test.step('Создание сессии challenger', async () => {
-      response = await challengerService.post();
+      response = await api.challenger.post();
     });
 
     await test.step('Проверка ответа и сохранение токена', async () => {
@@ -21,12 +19,11 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('15 - POST /todos (400) extra', { tag: ['@api', '@post'] }, async ({ request }) => {
-    const todosService = new TodosService(request);
+  test('15 - POST /todos (400) extra', { tag: ['@api', '@post'] }, async ({ api }) => {
     let response;
 
     await test.step('Отправить POST /todos с лишним полем priority', async () => {
-      response = await todosService.postTodo(token, {
+      response = await api.todos.postTodo(token, {
         title: 'a title',
         description: 'optional',
         priority: 'extra',
@@ -38,8 +35,7 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('17 - POST /todos/{id} (200)', { tag: ['@api', '@post'] }, async ({ request }) => {
-    const todosService = new TodosService(request);
+  test('17 - POST /todos/{id} (200)', { tag: ['@api', '@post'] }, async ({ api }) => {
     let id;
     let createRes;
     let created;
@@ -47,7 +43,7 @@ test.describe('API Challenges', () => {
     let updated;
 
     await test.step('Создать todo', async () => {
-      createRes = await todosService.postTodo(token, {
+      createRes = await api.todos.postTodo(token, {
         title: 'Todo to update',
         description: 'Original description',
         doneStatus: false,
@@ -65,7 +61,7 @@ test.describe('API Challenges', () => {
     });
 
     await test.step('Обновить todo по id', async () => {
-      updateRes = await todosService.postTodoById(token, id, {
+      updateRes = await api.todos.postTodoById(token, id, {
         title: 'Updated title',
       });
     });
@@ -77,13 +73,12 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('25 - GET /todos (200) XML', { tag: ['@api', '@get'] }, async ({ request }) => {
-    const todosService = new TodosService(request);
+  test('25 - GET /todos (200) XML', { tag: ['@api', '@get'] }, async ({ api }) => {
     let response;
     let text;
 
     await test.step('Запросить todos в XML формате', async () => {
-      response = await todosService.getTodos(token, { accept: 'application/xml' });
+      response = await api.todos.getTodos(token, { accept: 'application/xml' });
     });
 
     await test.step('Проверить статус ответа 200', async () => {
@@ -96,13 +91,12 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@api', '@get'] }, async ({ request }) => {
-    const challengerService = new ChallengerService(request);
+  test('34 - GET /challenger/guid (existing X-CHALLENGER)', { tag: ['@api', '@get'] }, async ({ api }) => {
     let response;
     let body;
 
     await test.step('Запросить данные challenger по guid', async () => {
-      response = await challengerService.getChallengerGuid(token);
+      response = await api.challenger.getChallengerGuid(token);
     });
 
     await test.step('Проверить статус ответа 200', async () => {
@@ -116,15 +110,14 @@ test.describe('API Challenges', () => {
     });
   });
 
-  test('36 - PUT /challenger/guid CREATE', { tag: ['@api', '@put'] }, async ({ request }) => {
-    const challengerService = new ChallengerService(request);
+  test('36 - PUT /challenger/guid CREATE', { tag: ['@api', '@put'] }, async ({ api }) => {
     const newToken = faker.string.uuid();
     let response1;
     let body;
     let response2;
 
     await test.step('Получить текущий payload challenger', async () => {
-      response1 = await challengerService.getChallengerGuid(token);
+      response1 = await api.challenger.getChallengerGuid(token);
       body = await response1.json();
     });
 
@@ -133,7 +126,7 @@ test.describe('API Challenges', () => {
     });
 
     await test.step('Отправить PUT /challenger/{guid}', async () => {
-      response2 = await challengerService.putChallengerGuid(body, newToken);
+      response2 = await api.challenger.putChallengerGuid(body, newToken);
     });
 
     await test.step('Проверить создание challenger (201)', async () => {

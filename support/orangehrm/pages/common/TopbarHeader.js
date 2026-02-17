@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Верхняя панель (топбар): хлебные крошки, вкладки Employee List / Add Employee / Reports.
  */
@@ -10,8 +12,12 @@ class TopbarHeader {
 
     /** Переход на вкладку Employee List */
     async openEmployeeListTab() {
-        await this.employeeListTab.click();
-        await this.page.waitForLoadState('networkidle');
+        await test.step('Клик по вкладке Employee List', async () => {
+            await this.employeeListTab.click();
+        });
+        await test.step('Ожидание загрузки Employee List', async () => {
+            await this.page.waitForLoadState('networkidle');
+        });
     }
 }
 export default TopbarHeader

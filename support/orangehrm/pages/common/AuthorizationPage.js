@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Страница авторизации OrangeHRM
  */
@@ -16,8 +18,10 @@ export default class AuthorizationPage {
      * @param {string} login
      */
     async fillLoginInput(login) {
-        await this.usernameInput.waitFor({ state: 'visible' });
-        await this.usernameInput.fill(login);
+        await test.step('Заполнение логина', async () => {
+            await this.usernameInput.waitFor({ state: 'visible' });
+            await this.usernameInput.fill(login);
+        });
     }
 
     /**
@@ -25,12 +29,16 @@ export default class AuthorizationPage {
      * @param {string} password
      */
     async fillPasswordInput(password) {
-        await this.passwordInput.fill(password);
+        await test.step('Заполнение пароля', async () => {
+            await this.passwordInput.fill(password);
+        });
     }
 
     /** Нажимает кнопку Login. */
     async clickLoginButton() {
-        await this.loginButton.click();
+        await test.step('Клик по Login', async () => {
+            await this.loginButton.click();
+        });
     }
 
     /**
@@ -39,7 +47,9 @@ export default class AuthorizationPage {
      * @param {string} password
      */
     async openAndSubmitLogin(login, password) {
-        await this.page.goto('/');
+        await test.step('Открытие страницы логина', async () => {
+            await this.page.goto('/');
+        });
         await this.fillLoginInput(login);
         await this.fillPasswordInput(password);
         await this.clickLoginButton();
@@ -50,7 +60,9 @@ export default class AuthorizationPage {
      * @returns {Promise<string>}
      */
     async getErrorAlertText() {
-        await this.errorAlert.waitFor({ state: 'visible' });
-        return this.errorAlert.textContent();
+        return await test.step('Получение текста ошибки авторизации', async () => {
+            await this.errorAlert.waitFor({ state: 'visible' });
+            return this.errorAlert.textContent();
+        });
     }
 }

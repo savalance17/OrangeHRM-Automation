@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Страница добавления сотрудника (Add Employee).
  */
@@ -18,7 +20,9 @@ export default class PimAddEmployee {
      * @param {number} [timeout=90_000] - таймаут ожидания (мс)
      */
     async waitForLoaderHidden(timeout = 90_000) {
-        await this.formLoader.waitFor({ state: 'hidden', timeout });
+        await test.step('Ожидание скрытия лоадера формы Add Employee', async () => {
+            await this.formLoader.waitFor({ state: 'hidden', timeout });
+        });
     }
 
     /**
@@ -27,7 +31,9 @@ export default class PimAddEmployee {
      */
     async clickSave() {
         await this.waitForLoaderHidden();
-        await this.saveButton.click();
+        await test.step('Клик по Save в Add Employee', async () => {
+            await this.saveButton.click();
+        });
     }
 
     /**
@@ -37,11 +43,15 @@ export default class PimAddEmployee {
      */
     async fillForm(data) {
         await this.waitForLoaderHidden();
-        await this.firstNameInput.fill(data.firstName ?? '');
-        await this.middleNameInput.fill(data.middleName ?? '');
-        await this.lastNameInput.fill(data.lastName ?? '');
+        await test.step('Заполнение имени, отчества и фамилии в Add Employee', async () => {
+            await this.firstNameInput.fill(data.firstName ?? '');
+            await this.middleNameInput.fill(data.middleName ?? '');
+            await this.lastNameInput.fill(data.lastName ?? '');
+        });
         if (data.employeeId != null) {
-            await this.employeeIdInput.fill(data.employeeId);
+            await test.step('Заполнение Employee Id в Add Employee', async () => {
+                await this.employeeIdInput.fill(data.employeeId);
+            });
         }
     }
 }

@@ -1,4 +1,4 @@
-import { test, expect, users, createEmployeeDataFields } from '../support/orangehrm/fixtures/index.js';
+import { test, expect, users, EmployeeDataBuilder } from '../support/orangehrm/fixtures/index.js';
 import '../support/allure-screenshots.js';
 import { apiLogin } from '../support/orangehrm/utils/auth/authentication.js';
 import {
@@ -17,7 +17,7 @@ test.describe('PIM', { tag: ['@smoke', '@pim'] }, () => {
     });
 
     test('Добавление сотрудника в "Employee List"', async function ({ pim }) {
-        const employeeData = createEmployeeDataFields();
+        const employeeData = new EmployeeDataBuilder().withRandomEmployeeId().build();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -35,7 +35,7 @@ test.describe('PIM', { tag: ['@smoke', '@pim'] }, () => {
     });
 
     test('Поиск добавленного сотрудника в Employee List по Employee Id', async function ({ pim }) {
-        const employeeData = createEmployeeDataFields();
+        const employeeData = new EmployeeDataBuilder().withRandomEmployeeId().build();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -55,7 +55,7 @@ test.describe('PIM', { tag: ['@smoke', '@pim'] }, () => {
     });
 
     test('Поиск добавленного сотрудника в Employee List по Employee Name', async function ({ pim }) {
-        const employeeData = createEmployeeDataFields();
+        const employeeData = new EmployeeDataBuilder().withRandomEmployeeId().build();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -77,8 +77,8 @@ test.describe('PIM', { tag: ['@smoke', '@pim'] }, () => {
     });
 
     test('Редактирование сотрудника', async function ({ pim }) {
-        const employeeData = createEmployeeDataFields();
-        const updatedData = createEmployeeDataFields({ includeEmployeeId: false });
+        const employeeData = new EmployeeDataBuilder().withRandomEmployeeId().build();
+        const updatedData = new EmployeeDataBuilder().withoutEmployeeId().build();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);
@@ -121,7 +121,7 @@ test.describe('PIM', { tag: ['@smoke', '@pim'] }, () => {
     });
 
     test('Удаление сотрудника', async function ({ pim }) {
-        const employeeData = createEmployeeDataFields();
+        const employeeData = new EmployeeDataBuilder().withRandomEmployeeId().build();
 
         await test.step('Подготовка тестовых данных: создание сотрудника', async () => {
             await createEmployee(pim, employeeData);

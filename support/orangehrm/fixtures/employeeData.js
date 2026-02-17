@@ -1,21 +1,49 @@
 import { faker } from '@faker-js/faker';
 
 /**
- * Генерация тестовых данных: firstName, middleName, lastName; при опции includeEmployeeId добавляется employeeId.
- * Для создания сотрудника — createEmployeeDataFields() или createEmployeeDataFields({ includeEmployeeId: true }).
- * Для обновления полей имени в Personal Details — createEmployeeDataFields({ includeEmployeeId: false }).
- * @param {{ includeEmployeeId?: boolean }} [options] — по умолчанию { includeEmployeeId: true }
- * @returns {{ firstName: string, middleName: string, lastName: string, [employeeId]: string }}
+ * Билдер тестовых данных сотрудника (Builder).
+ * Позволяет собирать объект с полями firstName, middleName, lastName, employeeId через цепочку вызовов.
  */
-export function createEmployeeDataFields(options = {}) {
-    const { includeEmployeeId = true } = options;
-    const data = {
-        firstName: faker.person.firstName(),
-        middleName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-    };
-    if (includeEmployeeId) {
-        data.employeeId = faker.string.alphanumeric(8).toUpperCase();
+export class EmployeeDataBuilder {
+    constructor() {
+        this.data = {};
+        this.includeEmployeeId = true;
     }
-    return data;
+
+    /**
+     * Генерирует случайный Employee Id (8 символов, буквы/цифры, верхний регистр) и включает его в результат build().
+     * @returns {EmployeeDataBuilder} this для цепочки вызовов
+     */
+    withRandomEmployeeId() {
+        this.data.employeeId = faker.string.alphanumeric(8).toUpperCase();
+        this.includeEmployeeId = true;
+        return this;
+    }
+
+    /**
+     * Исключает поле employeeId из результата build() (например, для данных только имени/фамилии при обновлении Personal Details).
+     * @returns {EmployeeDataBuilder} this для цепочки вызовов
+     */
+    withoutEmployeeId() {
+        this.includeEmployeeId = false;
+        return this;
+    }
+
+    /**
+     * Собирает объект тестовых данных. Неуказанные поля заполняются через faker.
+     * @returns {{ firstName: string, middleName: string, lastName: string, [employeeId]: string }} объект данных сотрудника
+     */
+    build() {
+        const data = {
+            firstName: this.data.firstName ?? faker.person.firstName(),
+            middleName: this.data.middleName ?? faker.person.firstName(),
+            lastName: this.data.lastName ?? faker.person.lastName(),
+        };
+
+        if (this.includeEmployeeId) {
+            data.employeeId = this.data.employeeId ?? faker.string.alphanumeric(8).toUpperCase();
+        }
+
+        return data;
+    }
 }

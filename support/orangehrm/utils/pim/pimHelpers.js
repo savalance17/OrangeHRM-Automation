@@ -15,7 +15,7 @@ export async function openPim(page) {
 /**
  * Подготовка тестовых данных: создаёт сотрудника по переданным данным.
  * @param {import('../../pages/pim/PimFacade.js').default} pim
- * @param {Object} employeeData - { firstName, middleName, lastName, employeeId } (из createEmployeeDataFields())
+ * @param {Object} employeeData - { firstName, middleName, lastName, employeeId } (из EmployeeDataBuilder)
  */
 export async function createEmployee(pim, employeeData) {
     await pim.pimEmployeeList.clickAdd();

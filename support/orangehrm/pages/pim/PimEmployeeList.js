@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Страница списка сотрудников PIM (Employee List).
  * Форма Employee Information: Employee Name, Employee Id.
@@ -19,7 +21,9 @@ export default class PimEmployeeList {
 
     /** Нажимает кнопку Add для добавления сотрудника */
     async clickAdd() {
-        await this.addButton.click();
+        await test.step('Клик по Add в списке сотрудников', async () => {
+            await this.addButton.click();
+        });
     }
 
     /**
@@ -29,7 +33,9 @@ export default class PimEmployeeList {
      * @param {number} [stableForMs=500] - сколько ms контент должен быть неизменным
      */
     async waitForTableReady(timeout = 15_000, stableForMs = 500) {
-        await this.tableLoader.waitFor({ state: 'hidden', timeout });
+        await test.step('Ожидание скрытия лоадера таблицы сотрудников', async () => {
+            await this.tableLoader.waitFor({ state: 'hidden', timeout });
+        });
         await this.waitForTableStability({ timeout, stableForMs });
     }
 
@@ -41,29 +47,31 @@ export default class PimEmployeeList {
      * @param {number} [options.pollIntervalMs=100]
      */
     async waitForTableStability({ timeout, stableForMs, pollIntervalMs = 100 }) {
-        const deadline = Date.now() + timeout;
-        let lastText = null;
-        let stableSince = null;
+        await test.step('Ожидание стабилизации таблицы сотрудников', async () => {
+            const deadline = Date.now() + timeout;
+            let lastText = null;
+            let stableSince = null;
 
-        while (Date.now() < deadline) {
-            const currentText = (await this.tableBody.textContent()) ?? '';
+            while (Date.now() < deadline) {
+                const currentText = (await this.tableBody.textContent()) ?? '';
 
-            if (currentText === lastText) {
-                if (stableSince == null) {
+                if (currentText === lastText) {
+                    if (stableSince == null) {
+                        stableSince = Date.now();
+                    }
+                    if (Date.now() - stableSince >= stableForMs) {
+                        return;
+                    }
+                } else {
+                    lastText = currentText;
                     stableSince = Date.now();
                 }
-                if (Date.now() - stableSince >= stableForMs) {
-                    return;
-                }
-            } else {
-                lastText = currentText;
-                stableSince = Date.now();
+
+                await this.page.waitForTimeout(pollIntervalMs);
             }
 
-            await this.page.waitForTimeout(pollIntervalMs);
-        }
-
-        throw new Error('Таблица не стабилизировалась за отведённое время.');
+            throw new Error('Таблица не стабилизировалась за отведённое время.');
+        });
     }
 
     /**
@@ -73,14 +81,22 @@ export default class PimEmployeeList {
      * @param {string} [filters.employeeId] - Employee Id
      */
     async searchByFilters(filters) {
-        await this.filterArea.waitFor({ state: 'visible' });
+        await test.step('Ожидание формы фильтров Employee Information', async () => {
+            await this.filterArea.waitFor({ state: 'visible' });
+        });
         if (filters.employeeName != null) {
-            await this.employeeNameSearchInput.fill(filters.employeeName);
+            await test.step('Заполнение фильтра Employee Name', async () => {
+                await this.employeeNameSearchInput.fill(filters.employeeName);
+            });
         }
         if (filters.employeeId != null) {
-            await this.employeeIdSearchInput.fill(filters.employeeId);
+            await test.step('Заполнение фильтра Employee Id', async () => {
+                await this.employeeIdSearchInput.fill(filters.employeeId);
+            });
         }
-        await this.searchButton.click();
+        await test.step('Клик по Search', async () => {
+            await this.searchButton.click();
+        });
         await this.waitForTableReady();
     }
 
@@ -96,7 +112,9 @@ export default class PimEmployeeList {
      * @returns {Promise<number>}
      */
     async getTableRowCount() {
-        return this.tableRows.count();
+        return await test.step('Получение количества строк в таблице сотрудников', async () => {
+            return this.tableRows.count();
+        });
     }
 
     /**
@@ -121,7 +139,9 @@ export default class PimEmployeeList {
      * @param {number} [timeout=15000] - таймаут
      */
     async waitForRowWithEmployeeIdVisible(employeeId, timeout = 15_000) {
-        await this.getRowByEmployeeId(employeeId).waitFor({ state: 'visible', timeout });
+        await test.step('Ожидание строки сотрудника по Employee Id', async () => {
+            await this.getRowByEmployeeId(employeeId).waitFor({ state: 'visible', timeout });
+        });
     }
 
     /**
@@ -138,8 +158,10 @@ export default class PimEmployeeList {
      * @param {string} employeeId - Employee Id сотрудника для редактирования
      */
     async clickEditButton(employeeId) {
-        const row = this.getRowByEmployeeId(employeeId);
-        await row.locator(this.rowActionButtonsSelector).first().click();
+        await test.step('Открытие редактирования сотрудника', async () => {
+            const row = this.getRowByEmployeeId(employeeId);
+            await row.locator(this.rowActionButtonsSelector).first().click();
+        });
     }
 
     /**
@@ -148,7 +170,9 @@ export default class PimEmployeeList {
      * @param {string} employeeId - Employee Id сотрудника для удаления
      */
     async clickDeleteButton(employeeId) {
-        const row = this.getRowByEmployeeId(employeeId);
-        await row.locator(this.rowActionButtonsSelector).last().click();
+        await test.step('Удаление сотрудника из списка', async () => {
+            const row = this.getRowByEmployeeId(employeeId);
+            await row.locator(this.rowActionButtonsSelector).last().click();
+        });
     }
 }

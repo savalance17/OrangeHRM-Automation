@@ -1,3 +1,5 @@
+import { test } from '@playwright/test';
+
 /**
  * Страница Dashboard после входа.
  */
@@ -10,7 +12,9 @@ export default class DashboardPage {
      * Ждёт видимости заголовка Dashboard.
      */
     async waitForHeadingVisible() {
-        await this.heading.waitFor({ state: 'visible' });
+        await test.step('Ожидание заголовка Dashboard', async () => {
+            await this.heading.waitFor({ state: 'visible' });
+        });
     }
 
     /**
@@ -18,7 +22,9 @@ export default class DashboardPage {
      * @returns {Promise<string>}
      */
     async getHeadingText() {
-        await this.heading.waitFor({ state: 'visible' });
-        return (await this.heading.textContent()).trim();
+        return await test.step('Получение текста заголовка Dashboard', async () => {
+            await this.heading.waitFor({ state: 'visible' });
+            return (await this.heading.textContent()).trim();
+        });
     }
 }
