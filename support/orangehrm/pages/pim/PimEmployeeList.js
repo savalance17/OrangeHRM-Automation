@@ -15,6 +15,7 @@ export default class PimEmployeeList {
         this.searchButton = this.filterArea.locator('button[type="submit"]');
         this.tableRows = this.employeeList.locator('.oxd-table-body .oxd-table-card');
         this.tableBody = this.employeeList.locator('.oxd-table-body');
+        this.tableBodySelector = '.orangehrm-employee-list .oxd-table-body';
         this.tableLoader = this.employeeList.locator('.oxd-table-loader');
         this.rowActionButtonsSelector = '.oxd-table-cell-actions button';
     }
@@ -40,37 +41,33 @@ export default class PimEmployeeList {
     }
 
     /**
-     * Ждёт, пока текст таблицы не изменяется stableForMs.
+     * Ждёт, пока текст таблицы не изменяется
      * @param {Object} options
      * @param {number} options.timeout
      * @param {number} options.stableForMs
-     * @param {number} [options.pollIntervalMs=100]
+     * @param {number} [options.pollIntervalMs=100] - интервал опроса (передаётся в waitForFunction)
      */
     async waitForTableStability({ timeout, stableForMs, pollIntervalMs = 100 }) {
         await test.step('Ожидание стабилизации таблицы сотрудников', async () => {
-            const deadline = Date.now() + timeout;
-            let lastText = null;
-            let stableSince = null;
-
-            while (Date.now() < deadline) {
-                const currentText = (await this.tableBody.textContent()) ?? '';
-
-                if (currentText === lastText) {
-                    if (stableSince == null) {
-                        stableSince = Date.now();
+            await this.page.waitForFunction(
+                ({ selector, stableForMs }) => {
+                    const el = document.querySelector(selector);
+                    if (!el) return false;
+                    const text = el.textContent || '';
+                    const now = Date.now();
+                    if (!window.__pimTableStability) {
+                        window.__pimTableStability = { lastText: '', stableSince: now };
                     }
-                    if (Date.now() - stableSince >= stableForMs) {
-                        return;
+                    const s = window.__pimTableStability;
+                    if (text !== s.lastText) {
+                        s.lastText = text;
+                        s.stableSince = now;
                     }
-                } else {
-                    lastText = currentText;
-                    stableSince = Date.now();
-                }
-
-                await this.page.waitForTimeout(pollIntervalMs);
-            }
-
-            throw new Error('Таблица не стабилизировалась за отведённое время.');
+                    return (now - s.stableSince) >= stableForMs;
+                },
+                { selector: this.tableBodySelector, stableForMs },
+                { timeout, polling: pollIntervalMs }
+            );
         });
     }
 
